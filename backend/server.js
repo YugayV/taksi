@@ -9,10 +9,10 @@ const app = express();
 const PORT = 3000;
 
 // Initialize Gemini
-// WARNING: In production, use process.env.GOOGLE_API_KEY
-// For this demo, we assume the user will provide it or we use a placeholder that will fail if not set.
-// User must set GOOGLE_API_KEY in .env
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "YOUR_API_KEY_HERE");
+if (!process.env.GOOGLE_API_KEY) {
+    console.warn("WARNING: GOOGLE_API_KEY is not set in .env. AI features will not work.");
+}
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "dummy_key");
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
 app.use(cors());
