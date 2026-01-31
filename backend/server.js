@@ -19,7 +19,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // --- Mock Database (Fallback) ---
-// ... existing code ...let drivers = [
+let drivers = [
     { id: 1, telegram_id: "12345", name: "Aziz", phone: "+998901234567", car: "Chevrolet Cobalt (White)", lat: 41.2995, lng: 69.2401, subscriptionExpires: null },
     { id: 2, telegram_id: "67890", name: "Bekzod", phone: "+998909876543", car: "Chevrolet Gentra (Black)", lat: 41.3000, lng: 69.2450, subscriptionExpires: "2026-12-31T23:59:59Z" },
     { id: 3, telegram_id: "11223", name: "Sherzod", phone: "+998901112233", car: "Chevrolet Spark (Grey)", lat: 41.2950, lng: 69.2350, subscriptionExpires: "2026-12-31T23:59:59Z" }
