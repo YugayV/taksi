@@ -1,0 +1,12 @@
+{
+  "name": "taksi-uzbekistan-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../mobile && npm install",
+    "start:backend": "cd backend && npm start",
+    "start:mobile": "cd mobile && npm start",
+    "android": "cd mobile && npm run android",
+    "build:android": "cd mobile && npm run build:android"
+  }
+}
