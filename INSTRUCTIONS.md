@@ -105,7 +105,14 @@ npm run android
     *   `GEMINI_API_KEY`: ваш ключ.
     *   `PORT`: `3000` (не обязательно, Railway обычно сам дает PORT, но лучше указать).
 6.  Добавьте PostgreSQL Database через интерфейс Railway.
-
+7.  **ПОЛУЧЕНИЕ URL:**
+    *   После успешного деплоя перейдите в **Settings** -> **Networking** (или Domains).
+    *   Нажмите "Generate Domain" (если нет домена).
+    *   Скопируйте полученную ссылку (например: `taksi-production.up.railway.app`).
+    *   **ОБЯЗАТЕЛЬНО:** Откройте `mobile/App.js` и вставьте эту ссылку в `const RAILWAY_URL`. Не забудьте добавить `/api` в конце!
+        ```javascript
+        const RAILWAY_URL = 'https://taksi-production.up.railway.app/api';
+        ```
 
 ### Mobile (APK для Android)
 1.  Установите EAS CLI: `npm install -g eas-cli`.
