@@ -98,8 +98,14 @@ npm run android
 ### Backend (Railway)
 1.  Зарегистрируйтесь на [Railway.app](https://railway.app/).
 2.  Создайте "New Project" -> "Deploy from GitHub".
-3.  Добавьте переменные окружения (Variables): `GEMINI_API_KEY`, `PGUSER`, и т.д.
-4.  Добавьте PostgreSQL Database через интерфейс Railway.
+3.  Выберите репозиторий `taksi`.
+4.  **ВАЖНО:** Перейдите в **Settings** -> **General** -> **Root Directory** и укажите `/backend`.
+    *   *Если вы не сделаете это, Railway будет использовать скрипты из корня, которые мы настроили для совместимости, но лучше указать явную папку.*
+5.  В разделе **Variables** добавьте:
+    *   `GEMINI_API_KEY`: ваш ключ.
+    *   `PORT`: `3000` (не обязательно, Railway обычно сам дает PORT, но лучше указать).
+6.  Добавьте PostgreSQL Database через интерфейс Railway.
+
 
 ### Mobile (APK для Android)
 1.  Установите EAS CLI: `npm install -g eas-cli`.

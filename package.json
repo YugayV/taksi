@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "start": "cd backend && npm start",
+    "postinstall": "cd backend && npm install",
     "install:all": "cd backend && npm install && cd ../mobile && npm install",
     "start:backend": "cd backend && npm start",
     "start:mobile": "cd mobile && npm start",
