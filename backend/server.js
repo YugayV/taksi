@@ -83,8 +83,13 @@ app.post('/api/auth/telegram', async (req, res) => {
 
 // 5. Poisk blizhayshikh voditeley
 app.post('/api/drivers/nearby', async (req, res) => {
-    const { lat, lng } = req.body;
+    const { lat, lng, riderPhone } = req.body;
     
+    // Log rider phone if provided (can be used to notify drivers)
+    if (riderPhone) {
+        console.log(`Rider searching: ${riderPhone} at ${lat}, ${lng}`);
+    }
+
     let activeDrivers = [];
 
     if (db.isConnected()) {
@@ -186,6 +191,8 @@ app.get('/api/payment-info', (req, res) => {
     res.json({
         telegram_wallet: "ton://transfer/UQ...", // Mock TON wallet
         crypto_wallet: "TRC20: T...", // Mock USDT wallet
+        click: "8600 0000 0000 0000 (Click)",
+        payme: "8600 1111 1111 1111 (Payme)",
         amount: SUBSCRIPTION_COST,
         currency: "UZS"
     });
