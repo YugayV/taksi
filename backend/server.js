@@ -4,9 +4,11 @@ const bodyParser = require('body-parser');
 const moment = require('moment');
 const db = require('./db');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { getJson } = require("serpapi");
 
 const app = express();
 const PORT = 3000;
+const SERPAPI_KEY = "6ef8970515a5aa25c140b25e1b3b1063c05ab60106d1dcc698084aed6e60cb7e";
 
 // Initialize Gemini
 if (!process.env.GOOGLE_API_KEY) {
@@ -27,18 +29,21 @@ const SUBSCRIPTION_COST = 200000; // UZS
 
 // --- Routes ---
 
-// Auth / Registration via Telegram
-app.post('/api/auth/telegram', async (req, res) => {
-    const { telegram_id, first_name, username, photo_url } = req.body;
+// Auth / Registration via Telegram/Phone/Gmail
+app.post('/api/auth/login', async (req, res) => {
+    const { login_id, login_type, first_name, username, photo_url } = req.body;
+    
+    // Fallback for old app versions or direct Telegram calls
+    const userIdentifier = login_id || req.body.telegram_id;
 
-    if (!telegram_id) {
-        return res.status(400).json({ error: "Telegram ID required" });
+    if (!userIdentifier) {
+        return res.status(400).json({ error: "Login ID required" });
     }
 
     if (db.isConnected()) {
         try {
             // Check if driver exists
-            const checkRes = await db.query('SELECT * FROM drivers WHERE telegram_id = $1', [telegram_id]);
+            const checkRes = await db.query('SELECT * FROM drivers WHERE telegram_id = $1', [userIdentifier]);
             let driver = checkRes.rows[0];
 
             if (!driver) {
@@ -46,7 +51,7 @@ app.post('/api/auth/telegram', async (req, res) => {
                 const trialExpires = moment().add(1, 'month').toISOString();
                 const insertRes = await db.query(
                     'INSERT INTO drivers (telegram_id, name, subscription_expires, is_trial_used, is_active) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-                    [telegram_id, first_name || username, trialExpires, true, true]
+                    [userIdentifier, first_name || username || userIdentifier, trialExpires, true, true]
                 );
                 driver = insertRes.rows[0];
             }
@@ -63,13 +68,14 @@ app.post('/api/auth/telegram', async (req, res) => {
         }
     } else {
         // Fallback to Mock Data
-        let driver = drivers.find(d => d.telegram_id === telegram_id);
+        let driver = drivers.find(d => d.telegram_id === userIdentifier);
         if (!driver) {
             const trialExpires = moment().add(1, 'month').toISOString();
             driver = {
                 id: drivers.length + 1,
-                telegram_id,
+                telegram_id: userIdentifier,
                 name: first_name || username || `Driver ${drivers.length + 1}`,
+                login_type: login_type || 'telegram',
                 subscriptionExpires: trialExpires,
                 is_trial_used: true
             };
@@ -212,6 +218,35 @@ app.post('/api/ride/calculate', (req, res) => {
         price: price,
         currency: "UZS",
         details: { distanceKm, rate: RATE_PER_KM }
+    });
+});
+
+// 6. Poisk mest (Google Maps via SerpApi)
+app.get('/api/places/search', (req, res) => {
+    const { query, lat, lng } = req.query;
+
+    if (!query) {
+        return res.status(400).json({ error: "Query required" });
+    }
+
+    // Default to Tashkent if coordinates not provided
+    const location = (lat && lng) ? `@${lat},${lng},14z` : "Uzbekistan";
+
+    getJson({
+        engine: "google_maps",
+        q: query,
+        ll: location,
+        type: "search",
+        api_key: SERPAPI_KEY
+    }, (json) => {
+        if (json.error) {
+            console.error("SerpApi Error:", json.error);
+            return res.status(500).json({ error: json.error });
+        }
+        
+        // Return local results or place results
+        const results = json.local_results || json.place_results || [];
+        res.json(results);
     });
 });
 

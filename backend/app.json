@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "6e804fc9-6935-424f-ab6f-16a4ad0b3927"
+      }
+    },
+    "android": {
+      "package": "com.vamp94.taksibackend"
+    }
+  }
+}
